@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Offline Field Copilot — Local AI for Private Field Notes</title>
+<meta name="description" content="Offline Field Copilot is a local-first Android QVAC copilot for private field notes, checklists and instructions. On-device inference, no cloud LLM APIs." />
+<meta property="og:title" content="Offline Field Copilot" />
+<meta property="og:description" content="Private field notes. Local answers. No cloud LLM APIs." />
+<meta property="og:image" content="assets/offline-field-copilot-logo.png" />
+<style>
+  :root{
+    --bg:#050807;
+    --bg2:#071110;
+    --panel:#0D1514;
+    --panel2:#101C1A;
+    --text:#F2F7F5;
+    --muted:#A6B7B2;
+    --faint:#6F837D;
+    --line:rgba(164, 214, 201, .16);
+    --line2:rgba(164, 214, 201, .09);
+    --teal:#33D6C3;
+    --mint:#9EF7DC;
+    --green:#38D27A;
+    --yellow:#F2C14E;
+    --danger:#FF6B6B;
+    --shadow:0 24px 80px rgba(0,0,0,.42);
+    --radius:24px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--text);
+    background:
+      radial-gradient(circle at 18% 10%, rgba(51,214,195,.16), transparent 32%),
+      radial-gradient(circle at 86% 4%, rgba(56,210,122,.10), transparent 28%),
+      linear-gradient(135deg, var(--bg), var(--bg2) 44%, #030504);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  body:before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:-1;
+    background-image:linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:44px 44px;
+    mask-image:linear-gradient(to bottom, rgba(0,0,0,.55), transparent 78%);
+  }
+  a{color:inherit}
+  .wrap{width:min(1140px, calc(100% - 40px)); margin:0 auto}
+  .topbar{
+    position:sticky; top:0; z-index:20; backdrop-filter:blur(18px);
+    background:linear-gradient(to bottom, rgba(5,8,7,.86), rgba(5,8,7,.58));
+    border-bottom:1px solid var(--line2);
+  }
+  nav{height:72px; display:flex; align-items:center; justify-content:space-between; gap:22px}
+  .brand{display:flex; align-items:center; gap:12px; min-width:0; text-decoration:none}
+  .brand img{width:38px; height:38px; border-radius:13px; object-fit:cover; box-shadow:0 0 0 1px var(--line)}
+  .brand strong{display:block; font-size:15px; letter-spacing:.1px; white-space:nowrap}
+  .brand span{display:block; color:var(--muted); font-size:12px; margin-top:1px; white-space:nowrap}
+  .navlinks{display:flex; align-items:center; gap:18px; color:var(--muted); font-size:14px}
+  .navlinks a{text-decoration:none}
+  .navlinks a:hover{color:var(--text)}
+  .nav-cta{padding:9px 13px; border:1px solid var(--line); border-radius:999px; color:var(--text)!important; background:rgba(255,255,255,.03)}
+
+  .hero{padding:76px 0 58px; display:grid; grid-template-columns:1.05fr .95fr; gap:52px; align-items:center}
+  .eyebrow{display:inline-flex; align-items:center; gap:9px; padding:8px 12px; border:1px solid var(--line); border-radius:999px; color:var(--mint); background:rgba(51,214,195,.06); font-size:12px; text-transform:uppercase; letter-spacing:.7px}
+  .pulse{width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 0 8px rgba(56,210,122,.08)}
+  h1{font-size:clamp(40px, 6vw, 76px); line-height:.96; letter-spacing:-2.8px; margin:22px 0 18px}
+  .grad{background:linear-gradient(120deg,#fff 10%, var(--mint) 48%, var(--teal)); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .lead{font-size:clamp(17px, 2vw, 21px); color:var(--muted); max-width:680px; margin:0 0 28px}
+  .lead b{color:var(--text); font-weight:650}
+  .actions{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:28px}
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:48px; padding:12px 18px; border-radius:14px; text-decoration:none; font-weight:750; font-size:15px; border:1px solid transparent; transition:.18s ease}
+  .btn.primary{background:linear-gradient(135deg,var(--mint),var(--teal)); color:#03100E; box-shadow:0 14px 40px rgba(51,214,195,.20)}
+  .btn.secondary{border-color:var(--line); background:rgba(255,255,255,.035); color:var(--text)}
+  .btn:hover{transform:translateY(-1px)}
+  .mini-proof{display:flex; flex-wrap:wrap; gap:9px}
+  .pill{display:inline-flex; gap:7px; align-items:center; padding:8px 11px; border:1px solid var(--line2); border-radius:999px; color:var(--muted); font-size:13px; background:rgba(255,255,255,.025)}
+  .pill i{width:7px; height:7px; border-radius:50%; background:var(--teal); display:inline-block}
+
+  .hero-card{position:relative; min-height:560px}
+  .orb{position:absolute; inset:40px 20px 20px 20px; border-radius:40px; background:radial-gradient(circle at 40% 30%, rgba(51,214,195,.28), transparent 38%), linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02)); border:1px solid var(--line); box-shadow:var(--shadow); overflow:hidden}
+  .orb:before{content:""; position:absolute; inset:22px; border:1px solid rgba(158,247,220,.08); border-radius:32px}
+  .big-logo{position:absolute; width:min(72%,420px); aspect-ratio:1; right:2%; top:-4%; border-radius:34px; filter:drop-shadow(0 24px 46px rgba(0,0,0,.42)); object-fit:cover; transform:rotate(-2deg)}
+  .phone{position:absolute; left:0; bottom:0; width:330px; border-radius:38px; background:#08100F; border:1px solid rgba(158,247,220,.24); box-shadow:0 28px 90px rgba(0,0,0,.55); padding:18px}
+  .phone-top{height:22px; display:flex; justify-content:center; align-items:center}.speaker{width:70px;height:6px;border-radius:99px;background:rgba(255,255,255,.14)}
+  .screen{border-radius:25px; background:linear-gradient(180deg,#0B1715,#07100E); border:1px solid var(--line2); padding:18px}
+  .status{display:flex; justify-content:space-between; gap:12px; color:var(--muted); font-size:12px; margin-bottom:16px}.status b{color:var(--green)}
+  .mock-title{font-size:18px; font-weight:850; letter-spacing:-.4px; margin-bottom:8px}
+  .mock-sub{color:var(--muted); font-size:13px; margin-bottom:16px}
+  .note{background:rgba(255,255,255,.04); border:1px solid var(--line2); border-radius:16px; padding:12px; color:#D7E4E0; font-size:12px; margin-bottom:12px}
+  .answer{background:rgba(51,214,195,.08); border:1px solid rgba(51,214,195,.22); border-radius:16px; padding:12px; font-size:12px; color:#DDFBF4}
+  .floating{position:absolute; right:0; bottom:38px; width:230px; padding:16px; border-radius:20px; background:rgba(13,21,20,.86); border:1px solid var(--line); backdrop-filter:blur(14px); box-shadow:var(--shadow)}
+  .floating strong{display:block; font-size:14px; margin-bottom:5px}.floating p{margin:0; color:var(--muted); font-size:12px}
+
+  .section{padding:70px 0; border-top:1px solid var(--line2)}
+  .section-head{display:flex; justify-content:space-between; gap:20px; align-items:end; margin-bottom:26px}
+  .section h2{font-size:clamp(28px, 3.5vw, 44px); line-height:1.04; letter-spacing:-1.5px; margin:0}
+  .section-head p{max-width:440px; color:var(--muted); margin:0; font-size:16px}
+  .grid{display:grid; gap:16px}
+  .grid.three{grid-template-columns:repeat(3,1fr)}
+  .grid.four{grid-template-columns:repeat(4,1fr)}
+  .grid.two{grid-template-columns:repeat(2,1fr)}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025)); border:1px solid var(--line); border-radius:var(--radius); padding:22px; box-shadow:0 10px 36px rgba(0,0,0,.18)}
+  .card .k{display:inline-flex; width:34px; height:34px; border-radius:12px; align-items:center; justify-content:center; color:#041210; background:linear-gradient(135deg,var(--mint),var(--teal)); font-weight:900; margin-bottom:16px}
+  .card h3{margin:0 0 8px; font-size:18px; letter-spacing:-.3px}.card p{margin:0; color:var(--muted); font-size:14.5px}
+  .flow-card{position:relative}.flow-card:after{content:""; position:absolute; top:38px; right:-17px; width:17px; height:1px; background:var(--line)}.flow-card:last-child:after{display:none}
+  .scope{display:grid; grid-template-columns:1fr 1fr; gap:16px}.scope ul{list-style:none; margin:0; padding:0}.scope li{padding:11px 0; color:var(--muted); border-bottom:1px solid var(--line2); font-size:14.5px}.scope li:last-child{border-bottom:0}.scope strong{color:var(--text)}
+  .scope .yes li:before{content:"✓"; color:var(--green); margin-right:9px}.scope .no li:before{content:"—"; color:var(--danger); margin-right:9px}
+  .spec{display:flex; justify-content:space-between; gap:18px; padding:13px 0; border-bottom:1px solid var(--line2); font-size:14px}.spec:last-child{border-bottom:0}.spec span{color:var(--muted)}.spec b{text-align:right}
+  .evidence{display:grid; grid-template-columns:1.05fr .95fr; gap:16px}.checklist{display:grid; grid-template-columns:1fr 1fr; gap:10px}.check{border:1px solid var(--line2); border-radius:14px; padding:12px; color:var(--muted); font-size:13px; background:rgba(0,0,0,.10)}.check b{color:var(--text)}
+  .callout{padding:28px; border-radius:28px; border:1px solid rgba(51,214,195,.26); background:radial-gradient(circle at 20% 20%, rgba(51,214,195,.14), transparent 28%), linear-gradient(135deg, rgba(158,247,220,.10), rgba(255,255,255,.03)); display:flex; align-items:center; justify-content:space-between; gap:24px}.callout h2{font-size:32px}.callout p{color:var(--muted); margin:8px 0 0; max-width:620px}
+  footer{padding:38px 0 56px; color:var(--muted); border-top:1px solid var(--line2); font-size:14px}.footer-row{display:flex; justify-content:space-between; gap:18px; flex-wrap:wrap}.footer-row a{color:var(--mint); text-decoration:none}
+  @media(max-width:900px){.hero{grid-template-columns:1fr; padding-top:48px}.hero-card{min-height:480px}.big-logo{right:50%; transform:translateX(50%) rotate(-2deg); top:0}.phone{left:50%; transform:translateX(-50%); bottom:10px}.floating{display:none}.section-head{display:block}.section-head p{margin-top:12px}.grid.three,.grid.four,.grid.two,.scope,.evidence{grid-template-columns:1fr}.flow-card:after{display:none}.callout{display:block}.callout .actions{margin-top:18px}.navlinks{display:none}}
+  @media(max-width:520px){.wrap{width:min(100% - 28px, 1140px)}nav{height:64px}.brand span{display:none}h1{letter-spacing:-1.6px}.hero-card{min-height:430px}.orb{inset:20px 0}.phone{width:300px}.big-logo{width:300px}.section{padding:52px 0}.actions .btn{width:100%}}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="#top" aria-label="Offline Field Copilot home">
+          <img src="assets/offline-field-copilot-logo.png" alt="Offline Field Copilot logo" />
+          <div><strong>Offline Field Copilot</strong><span>A Pocket QVAC Agent</span></div>
+        </a>
+        <div class="navlinks">
+          <a href="#workflow">Workflow</a>
+          <a href="#evidence">Evidence</a>
+          <a href="#scope">Scope</a>
+          <a class="nav-cta" href="https://github.com/codeproof-tech/offline-field-copilot">GitHub</a>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <main id="top" class="wrap">
+    <section class="hero">
+      <div>
+        <span class="eyebrow"><span class="pulse"></span> QVAC Hackathon I · Edge AI</span>
+        <h1>Private field notes. <span class="grad">Local answers.</span></h1>
+        <p class="lead">Offline Field Copilot is a focused Android copilot that runs <b>QVAC SDK inference on consumer smartphone hardware</b>. Paste a checklist or field instruction, ask a practical question, and get an on-device answer — with <b>no cloud LLM APIs for inference</b>.</p>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/codeproof-tech/offline-field-copilot">View GitHub</a>
+          <a class="btn secondary" href="https://github.com/codeproof-tech/offline-field-copilot/tree/main/evidence">Review evidence</a>
+        </div>
+        <div class="mini-proof" aria-label="Project claims">
+          <span class="pill"><i></i> Mobile-first</span>
+          <span class="pill"><i></i> On-device inference</span>
+          <span class="pill"><i></i> Local context</span>
+          <span class="pill"><i></i> Offline-capable after setup</span>
+        </div>
+      </div>
+      <div class="hero-card" aria-label="Product visual">
+        <div class="orb"></div>
+        <img class="big-logo" src="assets/offline-field-copilot-logo.png" alt="Offline Field Copilot compass and check logo" />
+        <div class="phone">
+          <div class="phone-top"><div class="speaker"></div></div>
+          <div class="screen">
+            <div class="status"><span>QVAC runtime</span><b>local</b></div>
+            <div class="mock-title">Field note loaded</div>
+            <div class="mock-sub">Private checklist stays on the device.</div>
+            <div class="note">Generator unit inspection: fuel level, oil leakage, cooling airflow, emergency stop, abnormal vibration, temperature warning.</div>
+            <div class="answer"><b>First:</b> verify safety-critical items. <br/><b>Watch for:</b> leakage, airflow obstruction, abnormal vibration, temperature warning.</div>
+          </div>
+        </div>
+        <div class="floating"><strong>No cloud LLM path</strong><p>Designed for local QVAC inference. Demo evidence should show no OpenAI, Anthropic, Gemini or OpenRouter API configuration.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="values">
+      <div class="section-head">
+        <h2>Product values</h2>
+        <p>The product is not a generic chatbot. It is a small, verifiable edge-AI workflow for practical field work.</p>
+      </div>
+      <div class="grid four">
+        <article class="card"><div class="k">1</div><h3>Private by default</h3><p>Field notes, checklists and operational context should not be sent to external LLM APIs.</p></article>
+        <article class="card"><div class="k">2</div><h3>Offline resilience</h3><p>The app is designed for low-connectivity situations and is offline-capable after model setup/cache.</p></article>
+        <article class="card"><div class="k">3</div><h3>Focused assistance</h3><p>One local context, one practical question, one concise answer. No agent theater.</p></article>
+        <article class="card"><div class="k">4</div><h3>Verifiable build</h3><p>Open-source repo, clear README, evidence folder, run logs, and no-cloud verification.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="workflow">
+      <div class="section-head">
+        <h2>Workflow</h2>
+        <p>A simple demo flow judges can understand in under 30 seconds.</p>
+      </div>
+      <div class="grid four">
+        <article class="card flow-card"><div class="k">01</div><h3>Load model</h3><p>QVAC SDK initializes the local model lifecycle on the Android device.</p></article>
+        <article class="card flow-card"><div class="k">02</div><h3>Add context</h3><p>The user pastes a field note, checklist, instruction or local procedure.</p></article>
+        <article class="card flow-card"><div class="k">03</div><h3>Ask question</h3><p>Example: “What should I do first and what risks should I watch for?”</p></article>
+        <article class="card flow-card"><div class="k">04</div><h3>Generate locally</h3><p>A concise answer is generated on-device, then the model can be unloaded.</p></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Why this matters</h2>
+        <p>Field work often happens where cloud-first AI is inconvenient or inappropriate.</p>
+      </div>
+      <div class="grid three">
+        <article class="card"><div class="k">P</div><h3>Private context</h3><p>Operational notes may include sensitive work details. Keeping context on-device reduces unnecessary exposure.</p></article>
+        <article class="card"><div class="k">R</div><h3>Resilient execution</h3><p>Low-connectivity environments need useful workflows that do not depend on every request reaching a remote LLM.</p></article>
+        <article class="card"><div class="k">C</div><h3>Cost control</h3><p>Local inference avoids per-request cloud LLM API dependency for the demonstrated workflow.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="scope">
+      <div class="section-head">
+        <h2>Honest scope</h2>
+        <p>The claim is intentionally narrow. That makes it stronger.</p>
+      </div>
+      <div class="scope">
+        <div class="card yes">
+          <h3>What it does</h3>
+          <ul>
+            <li>Runs as a mobile-first Android app</li>
+            <li>Uses QVAC SDK for local inference</li>
+            <li>Works over pasted field notes and checklists</li>
+            <li>Shows model/runtime/device status</li>
+            <li>Uses no cloud LLM APIs for inference</li>
+          </ul>
+        </div>
+        <div class="card no">
+          <h3>What it does not claim</h3>
+          <ul>
+            <li>Not production-ready</li>
+            <li>Not enterprise-grade security</li>
+            <li>Not a complete RAG, OCR or voice system</li>
+            <li>Not guaranteed on every Android phone</li>
+            <li>Not fully offline from zero setup</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="evidence">
+      <div class="section-head">
+        <h2>Evidence-first submission</h2>
+        <p>The repo should prove the build, not just describe it.</p>
+      </div>
+      <div class="evidence">
+        <div class="card">
+          <h3>Minimum evidence bundle</h3>
+          <div class="checklist">
+            <div class="check"><b>README</b><br/>Setup and demo flow</div>
+            <div class="check"><b>License</b><br/>MIT / Apache-2.0</div>
+            <div class="check"><b>Device file</b><br/>Phone, OS, RAM, chipset</div>
+            <div class="check"><b>Run log</b><br/>Load → generate → unload</div>
+            <div class="check"><b>No-cloud note</b><br/>No cloud LLM APIs</div>
+            <div class="check"><b>Demo video</b><br/>Physical phone in frame</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Tech & hardware</h3>
+          <div class="spec"><span>App</span><b>Expo / React Native / TypeScript</b></div>
+          <div class="spec"><span>Inference</span><b>@qvac/sdk</b></div>
+          <div class="spec"><span>Context</span><b>Local pasted field notes</b></div>
+          <div class="spec"><span>Device</span><b>RedMagic / Nubia Android phone</b></div>
+          <div class="spec"><span>Cloud LLM APIs</span><b>Not used for inference</b></div>
+          <div class="spec"><span>Offline scope</span><b>After model setup/cache</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="callout">
+        <div>
+          <h2>Built for a clear judge reaction.</h2>
+          <p>“This is a mobile QVAC app, it runs local inference on consumer Android hardware, and the evidence shows no cloud LLM dependency.”</p>
+        </div>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/codeproof-tech/offline-field-copilot">Open repo</a>
+          <a class="btn secondary" href="https://github.com/codeproof-tech/offline-field-copilot/blob/main/docs/demo-script.md">Demo script</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-row">
+      <div>Offline Field Copilot — A Pocket QVAC Agent for private offline field work.</div>
+      <div><a href="https://github.com/codeproof-tech/offline-field-copilot">github.com/codeproof-tech/offline-field-copilot</a></div>
+    </div>
+  </footer>
+</body>
+</html>
