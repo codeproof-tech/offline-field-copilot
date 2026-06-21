@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Offline Field Copilot",
+    "slug": "offline-field-copilot",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "android": {
+      "package": "io.fieldcopilot.app"
+    },
+    "plugins": [
+      ["expo-build-properties", { "android": { "minSdkVersion": 29 } }],
+      "@qvac/sdk/expo-plugin"
+    ]
+  }
+}
