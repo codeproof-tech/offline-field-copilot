@@ -1,22 +1,12 @@
-# Device Evidence
+# Device Specifications (measured on this device)
 
-Primary test device:
+- **Device:** REDMAGIC 10S Pro (Nubia NX789J)
+- **Chipset (CPU):** Qualcomm Snapdragon 8 Elite
+- **GPU:** Adreno 830
+- **RAM:** 24 GB
+- **Storage:** ~1 TB
+- **OS:** Android 15
 
-- Device: RedMagic / Nubia (ZTE) Android smartphone
-- Android version: 15
-- RAM: 24 GB
-- CPU / chipset: Qualcomm Snapdragon 8 Elite
-- GPU: Adreno 830
-- Storage: ample free space (consumer device)
-- Network mode during demo: model downloaded once, then airplane mode for offline inference
+The performance metrics in `evidence/run-log.md` and `evidence/run-log.json` were **measured on this physical device** during an on-device run using `@qvac/sdk` with `Llama-3.2-1B-Instruct-Q4_0`. QVAC requires a physical device (it does not run on emulators).
 
-This is consumer smartphone hardware, not a cloud server or datacenter setup.
-
-## Physical device proof
-
-To be added:
-
-- photo or video frame showing the physical Android phone;
-- app running on the device;
-- model status screen;
-- local generation result.
+**System profiler screenshot:** see `evidence/screenshots/` — TODO: add the device "About phone / hardware" screenshot required by the rules.

@@ -19,7 +19,7 @@ export default function AnswerPanel(p: AnswerPanelProps) {
 
       <Text style={styles.label}>Evidence</Text>
       <View style={styles.panel}>
-        <Text style={styles.mono}>{JSON.stringify(p.evidence, null, 2)}</Text>
+        <Text style={styles.mono} selectable>{JSON.stringify(p.evidence, null, 2)}</Text>
       </View>
     </View>
   );

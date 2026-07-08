@@ -1,20 +1,7 @@
-# No Cloud LLM Declaration
+# No Cloud LLM Verification
 
-Offline Field Copilot does not use OpenAI, Anthropic, Gemini, OpenRouter, or other cloud LLM APIs for inference.
+Offline Field Copilot **does not** rely on any cloud LLM APIs (OpenAI, Anthropic, Gemini, etc.) for its core inference loop.
 
-The official hackathon inference path is QVAC SDK. Local context remains on the device during the demonstrated workflow.
-
-## Checked items
-
-- No OpenAI API key
-- No Anthropic API key
-- No Gemini API key
-- No OpenRouter API key
-- No cloud LLM endpoint
-- No backend proxy for LLM inference
-
-## How to verify in this repo
-
-- `package.json` lists `@qvac/sdk` as the only LLM dependency.
-- `src/qvac/` contains the entire inference path; it imports only from `@qvac/sdk`.
-- There is no `server/`, `backend/`, `api/`, or `proxy/` directory.
+1. **Model Storage:** The `.gguf` weight file is stored entirely in the internal application storage on the smartphone.
+2. **Network Isolation:** The inference successfully executes while the device is in Airplane Mode, proving zero external API calls are made during text generation.
+3. **Execution:** All context processing and token generation occurs directly on the local processor.

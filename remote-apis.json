@@ -1,0 +1,23 @@
+{
+  "project": "offline-field-copilot",
+  "description": "Structured list of every remote API / network call the project makes, for hackathon transparency.",
+  "cloud_llm_apis": [],
+  "remote_calls": [
+    {
+      "name": "QVAC model asset download",
+      "purpose": "One-time download of the Llama-3.2-1B-Instruct-Q4_0 model weights used for on-device inference.",
+      "provider": "QVAC model registry (Tether)",
+      "sdk": "@qvac/sdk@0.13.5 (downloadAsset / loadModel)",
+      "transport": "P2P (Holepunch/Pear) with HTTP fallback",
+      "trigger": "First model download; not called again once cached.",
+      "frequency": "once per device (cached thereafter)",
+      "data_sent": "Model asset identifier only. No user data, prompts, or field notes are transmitted.",
+      "required_for_inference_after_cache": false
+    }
+  ],
+  "notes": [
+    "No cloud LLM APIs are used for inference (no OpenAI, Anthropic, Gemini, OpenRouter, or any hosted model endpoint).",
+    "No backend proxy is used for inference.",
+    "After the one-time model download, inference runs fully on-device; verified in airplane mode."
+  ]
+}

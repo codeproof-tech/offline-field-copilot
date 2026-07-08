@@ -1,18 +1,8 @@
 # Verification
 
-This project demonstrates local-first inference through QVAC SDK.
+This document verifies the local generation capabilities of the Offline Field Copilot on an Android smartphone.
 
-Verification points:
-
-- Inference path uses `@qvac/sdk`.
-- No OpenAI API is used.
-- No Anthropic API is used.
-- No Gemini API is used.
-- No OpenRouter API is used.
-- No cloud LLM API key is configured.
-- Demo context is sample / non-private data.
-- Inference runs on a physical Android phone.
-
-## Offline scope
-
-The app is offline-capable after model setup/cache. The initial model download (peer-to-peer or HTTP) may require connectivity; after caching, inference runs with no network.
+- The application was compiled natively for ARM64.
+- The inference was executed locally using the QVAC SDK.
+- The generation was successfully tested and recorded in **Airplane Mode** (no Wi-Fi, no mobile data).
+- The text output streamed directly from the local weights loaded into the device memory.

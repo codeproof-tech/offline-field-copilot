@@ -133,4 +133,4 @@ Exact versions are pinned in `package.json` (from the official QVAC Expo tutoria
 
 ## License
 
-MIT
+Apache-2.0

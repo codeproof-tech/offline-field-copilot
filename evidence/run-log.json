@@ -1,0 +1,20 @@
+{
+  "model": "Llama-3.2-1B-Instruct-Q4_0",
+  "runtime": "@qvac/sdk (local, on-device)",
+  "device": "nubia NX789J",
+  "localInference": true,
+  "cloudApi": "disabled",
+  "generationTimeMs": 16497,
+  "TTFT": "269ms",
+  "Speed": "22.6 t/s",
+  "Device": "GPU",
+  "timestamp": "2026-07-08T00:23:25.113Z",
+  "rawStats": {
+    "timeToFirstToken": 268.937,
+    "tokensPerSecond": 22.58428960491444,
+    "cacheTokens": 0,
+    "promptTokens": 149,
+    "generatedTokens": 361,
+    "backendDevice": "gpu"
+  }
+}

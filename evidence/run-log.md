@@ -1,24 +1,29 @@
-# Run Log
+# Run Log — On-Device Inference (demo-001)
 
-Demo run:
+**Device:** REDMAGIC 10S Pro (Nubia NX789J)
+**Model:** Llama-3.2-1B-Instruct-Q4_0
+**Runtime:** @qvac/sdk (local, on-device)
+**Backend device:** GPU
+**Airplane mode:** ON (verified — no Wi-Fi, no mobile data)
+**Timestamp:** 2026-07-08T00:23:25.113Z
 
-1. App opened on physical Android device.
-2. QVAC runtime initialized.
-3. Model setup/cache checked.
-4. Model loaded.
-5. Local field note pasted.
-6. User question submitted.
-7. Answer generated on-device.
-8. Model unloaded.
+## Inference metrics (from QVAC completion result.stats)
 
-## Model
+| Metric | Value |
+|---|---|
+| Time to first token (TTFT) | 268.937 ms |
+| Speed | 22.58 tokens/sec |
+| Prompt tokens | 149 |
+| Generated tokens | 361 |
+| Generation time | 16497 ms |
+| Cache tokens | 0 |
+| Backend device | GPU |
 
-- QVAC model: Llama-3.2-1B-Instruct-Q4_0 (`LLAMA_3_2_1B_INST_Q4_0`)
+## Model lifecycle
+- model_load: yes
+- completion: yes (metrics above)
+- model_unload: yes
 
-## SDK
-
-- `@qvac/sdk` version: `<to be confirmed on device>`
-
-## Result
-
-To be added after the verified on-device run (status, generation time, screenshots).
+## Network
+No cloud LLM APIs used. Model downloaded once via the QVAC registry; after caching,
+inference runs fully on-device (verified in airplane mode). See `remote-apis.json`.

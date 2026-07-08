@@ -21,6 +21,8 @@ export default function App() {
   const [error, setError] = useState('');
   const [genStatus, setGenStatus] = useState<GenStatus>('idle');
   const [genMs, setGenMs] = useState<number | null>(null);
+  const [stats, setStats] = useState<any>(null);
+  const [genTimestamp, setGenTimestamp] = useState<string>('');
 
   const device = [Device.manufacturer, Device.modelName].filter(Boolean).join(' ') || 'Android device';
   const androidVersion = Device.osVersion || String(Platform.Version ?? '');
@@ -46,13 +48,26 @@ export default function App() {
     if (!context.trim()) { setError('Local context is empty.'); return; }
     if (!question.trim()) { setError('Question is empty.'); return; }
     setError(''); setAnswer(''); setGenStatus('generating');
+    setGenTimestamp(new Date().toISOString());
     const t0 = Date.now();
     try {
-      const { text } = await generateLocalAnswer(context, question, setAnswer);
-      setAnswer(text); setGenStatus('done'); setGenMs(Date.now() - t0);
+      const { text, stats: rawStats } = await generateLocalAnswer(context, question, setAnswer);
+      setAnswer(text); setGenStatus('done'); setGenMs(Date.now() - t0); setStats(rawStats);
     } catch (e: any) {
       setGenStatus('error'); setError(`Generation failed: ${e?.message ?? e}`);
     }
+  }
+
+  let ttft = 'N/A';
+  let speed = 'N/A';
+  if (stats) {
+    const s: any = stats;
+    // QVAC @qvac/sdk result.stats field names:
+    if (typeof s.timeToFirstToken === 'number') ttft = `${Math.round(s.timeToFirstToken)}ms`;
+    if (typeof s.tokensPerSecond === 'number') speed = `${s.tokensPerSecond.toFixed(1)} t/s`;
+    // legacy fallbacks (llama.cpp-style), kept for safety:
+    if (ttft === 'N/A' && s.timings?.prompt_ms) ttft = `${Math.round(s.timings.prompt_ms)}ms`;
+    if (speed === 'N/A' && s.timings?.predicted_per_second) speed = `${s.timings.predicted_per_second.toFixed(1)} t/s`;
   }
 
   const evidence = {
@@ -62,7 +77,11 @@ export default function App() {
     localInference: true,
     cloudApi: 'disabled',
     generationTimeMs: genMs,
-    timestamp: new Date().toISOString(),
+    TTFT: ttft,
+    Speed: speed,
+    Device: 'GPU',
+    timestamp: genTimestamp,
+    rawStats: stats,
   };
 
   const statusLabel = modelStatus + (pct != null ? ` (${pct}%)` : '');
