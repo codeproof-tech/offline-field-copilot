@@ -79,7 +79,7 @@ export default function App() {
     generationTimeMs: genMs,
     TTFT: ttft,
     Speed: speed,
-    Device: 'GPU',
+    Device: ((stats as any)?.backendDevice ?? 'UNKNOWN').toUpperCase(),
     timestamp: genTimestamp,
     rawStats: stats,
   };

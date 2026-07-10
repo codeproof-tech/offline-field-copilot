@@ -9,4 +9,4 @@
 
 The performance metrics in `evidence/run-log.md` and `evidence/run-log.json` were **measured on this physical device** during an on-device run using `@qvac/sdk` with `Llama-3.2-1B-Instruct-Q4_0`. QVAC requires a physical device (it does not run on emulators).
 
-**System profiler screenshot:** see `evidence/screenshots/` — TODO: add the device "About phone / hardware" screenshot required by the rules.
+**System profiler screenshot:** see `evidence/screenshots/hardware.png`

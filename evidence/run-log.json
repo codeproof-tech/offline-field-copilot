@@ -4,6 +4,8 @@
   "device": "nubia NX789J",
   "localInference": true,
   "cloudApi": "disabled",
+  "model_load": "success",
+  "model_unload": "success",
   "generationTimeMs": 16497,
   "TTFT": "269ms",
   "Speed": "22.6 t/s",

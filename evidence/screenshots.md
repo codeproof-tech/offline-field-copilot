@@ -1,9 +1,9 @@
 # Screenshots
 
-To be added (see `screenshots/`):
+Please see the full **Demo Video** (linked in the main README) for a complete visual walkthrough of the app, including:
+1. Airplane mode verification (no cloud)
+2. Local model loading and status
+3. Field note input and local answer generation
+4. On-device inference metrics (TTFT, Speed)
 
-1. Home screen
-2. Device / runtime / model status
-3. Local field note input
-4. Local answer result
-5. Evidence / no-cloud verification screen or log
+For hardware verification, see `screenshots/hardware.png`.

@@ -2,6 +2,8 @@
 
 **A Pocket QVAC Agent for private offline field work.**
 
+**[▶️ Watch Demo Video on YouTube](https://youtu.be/IseGv6yqqZE)**
+
 Offline Field Copilot is a local-first mobile AI copilot for Android. It uses `@qvac/sdk` inside an Expo / React Native app to run local LLM inference directly on consumer smartphone hardware.
 
 The app is designed for private field notes, checklists, instructions, and operational context. A user can paste local context, ask a practical question, and receive a concise answer generated on-device without cloud LLM APIs.
@@ -121,7 +123,10 @@ npx expo prebuild
 npx expo run:android --device
 ```
 
-Exact versions are pinned in `package.json` (from the official QVAC Expo tutorial). The model downloads once on first run (peer-to-peer / HTTP); after caching, inference runs fully on-device.
+`@qvac/sdk` is pinned to exactly **0.13.5**. Do not use `^0.7.0` - it fails to install (E404 on a transitive dependency).
+`patches/@qvac+sdk+0.13.5.patch` is applied automatically by `patch-package` on `npm install`.
+Do **not** run `npm audit fix` - it breaks the dependency tree.
+A physical Android device is required (QVAC does not run on emulators).
 
 ## Evidence bundle
 
@@ -131,6 +136,7 @@ Exact versions are pinned in `package.json` (from the official QVAC Expo tutoria
 - `evidence/verification.md`
 - `evidence/no-cloud-llm.md`
 - `evidence/screenshots.md`
+- `remote-apis.json`
 
 ## License
 
