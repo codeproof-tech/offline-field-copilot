@@ -114,9 +114,9 @@ The official QVAC Expo integration is followed (see https://docs.qvac.tether.io/
 # Create the Expo base (SDK 54), then add the files from this repo:
 npx create-expo-app@latest offline-field-copilot --template blank-typescript@sdk-54
 cd offline-field-copilot
-npm i @qvac/sdk bare-rpc react-native-bare-kit bare-pack
+npm i @qvac/sdk bare-rpc react-native-bare-kit bare-pack patch-package
 npx expo install expo-file-system expo-build-properties expo-device expo-status-bar
-# Merge the plugins from this repo's app.json, then copy src/ and App.tsx in.
+# Merge the plugins from this repo's app.json, then copy src/, patches/ and App.tsx in.
 npx expo prebuild
 npx expo run:android --device
 ```
@@ -127,6 +127,7 @@ Exact versions are pinned in `package.json` (from the official QVAC Expo tutoria
 
 - `evidence/device.md`
 - `evidence/run-log.md`
+- `evidence/run-log.json`
 - `evidence/verification.md`
 - `evidence/no-cloud-llm.md`
 - `evidence/screenshots.md`
